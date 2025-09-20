@@ -13,8 +13,7 @@ CMyString::~CMyString() {
 }
 
 // 주소를 반환하는 함수, 주소를 반환받을 때는 포인터 변수로 받아야 한다.
-char* CMyString::getData()
-{
+char* CMyString::getData() const {
 	return m_data;
 }
 
@@ -31,4 +30,10 @@ void CMyString::setData(const char* pParam)
 
 	// m_data에 pParam을 복사한다.
 	strcpy_s(m_data, length + 1, pParam); // strcpy_s(대상, 대상 크기, 복사자)
+
+	this->length = length;
+}
+
+size_t CMyString::getLength() const {
+	return this->length;
 }

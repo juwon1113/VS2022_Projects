@@ -9,9 +9,7 @@ int main(void)
 
 	str.setData("Hello");
 	cout << str.getData() << endl;
-
-	str.setData("World");
-	cout << str.getData() << endl;
+	cout << "length: " << str.getLength() << endl;
 
 	return 0;
 }
