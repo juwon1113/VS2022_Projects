@@ -8,12 +8,20 @@ CMyString::CMyString() {
 	cout << "CMyString()" << endl;
 }
 
+explicit CMyString::CMyString(const char* param) {
+	cout << "CMyString(const char*)" << endl;
+	this->setData(param);
+}
+
 // Deep copy를 위한 복사 생성자
 // 원본을 보호하기 위해 const를 사용
+// 참조: 완전한 상태만 받을 수 있음
 CMyString::CMyString(const CMyString& rhs) {
+	cout << "CMyString(const CMyString&)" << endl;
 	this->setData(rhs.getData());
 }
 
+// 소멸자
 CMyString::~CMyString() {
 	cout << "~CMyString()" << endl;
 	delete[] m_data;
@@ -22,7 +30,7 @@ CMyString::~CMyString() {
 // 주소를 반환하는 함수
 // 주소를 반환받을 때는 포인터 변수로 받아야 한다.
 // const 멤버 함수로 객체 상태 변경 불가
-char* CMyString::getData() const {
+const char* CMyString::getData() const {
 	return m_data;
 }
 
@@ -51,4 +59,9 @@ void CMyString::setData(const char* pParam)
 // 주의: setter함수에 독립적인 메모리 할당이 진행되어야한다.
 void CMyString::operator=(const CMyString& rhs) {
 	this->setData(rhs.getData());
+}
+
+// 형변환 연산자 (const char*로의 암묵적 변환)
+CMyString::operator const char* () const {
+	return m_data;
 }
