@@ -8,7 +8,9 @@ CMyString::CMyString() {
 	cout << "CMyString()" << endl;
 }
 
-explicit CMyString::CMyString(const char* param) {
+// 명시적 변환 생성자
+// explicit는 헤더파일에만 작성 가능
+CMyString::CMyString(const char* param) {
 	cout << "CMyString(const char*)" << endl;
 	this->setData(param);
 }
@@ -19,6 +21,18 @@ explicit CMyString::CMyString(const char* param) {
 CMyString::CMyString(const CMyString& rhs) {
 	cout << "CMyString(const CMyString&)" << endl;
 	this->setData(rhs.getData());
+}
+
+// noexcept: 이동 사용 보장하기 위한 장치(예외 발생 시 복사 사용)
+// && 사용 이유: 곧 사라질 임시 객체의 포인터를  안전하게 사용하기 위함
+// 임시 객체 -> 자동 이동, 일반 객체 -> std::move()로 수동 이동
+// 일반 객체 이동 후 원본은 사용 금지
+CMyString::CMyString(CMyString&& rhs) noexcept {
+	cout << "CMyString(CMyString&&) - move" << endl;
+	this->m_data = rhs.m_data;
+	this->length = rhs.length;
+	rhs.m_data = nullptr;
+	rhs.length = 0;
 }
 
 // 소멸자
@@ -57,11 +71,36 @@ void CMyString::setData(const char* pParam)
 
 // Deep copy를 위한 대입 연산자 오버로딩
 // 주의: setter함수에 독립적인 메모리 할당이 진행되어야한다.
-void CMyString::operator=(const CMyString& rhs) {
-	this->setData(rhs.getData());
+CMyString& CMyString::operator=(const CMyString& rhs) {
+	if (this != &rhs)		// 자기 대입 방지 (s1 = s1)
+	{
+		this->setData(rhs.getData());
+	}
+
+	// this는 포인터이므로 *this를 사용해서 원본 반환
+	return *this;
 }
 
 // 형변환 연산자 (const char*로의 암묵적 변환)
 CMyString::operator const char* () const {
 	return m_data;
+}
+
+// 이동 대입 연산자
+// 생성자의 경우 빈 데이터이므로 해제 불가능
+// 이동 대입 연산자의 경우 데이터가 들어있으므로 해제 필수
+CMyString& CMyString::operator=(CMyString&& rhs) noexcept {
+	cout << "operator=(CMyString&&) - move" << endl;
+	if (this != &rhs)		// 자기 대입 방지
+	{
+		delete[] m_data;
+
+		m_data = rhs.m_data;
+		length = rhs.length;
+		rhs.m_data = nullptr;
+		rhs.length = 0;
+	}
+
+	// this는 포인터이므로 *this를 사용해서 원본 반환
+	return *this;
 }
